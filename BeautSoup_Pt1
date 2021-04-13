@@ -1,0 +1,66 @@
+import bs4 as bs
+import urllib.request
+
+source = urllib.request.urlopen('https://pythonprogramming.net/parsememcparseface/').read()
+
+Above returns us the JavScript or code/text behind the webpage
+
+soup = bs.BeautifulSoup(source,'lxml')
+
+'html5lib' was mentioned as something else that could be parsed through, but this seems to be the standard
+
+print(soup) also returns the HTML as we would expect it
+
+If you do print(soup) and print(source), it looks the same, but the source is just the plain response data, and the soup 
+	is an object that we can actually interact with, by tag, now, like so:
+
+# title of the page
+print(soup.title)
+
+# get attributes:
+print(soup.title.name)
+
+# get values:
+print(soup.title.string)
+
+# beginning navigation:
+print(soup.title.parent.name)
+
+# getting specific values:
+print(soup.p)
+
+Finding paragraph tags <p> is a fairly common task.
+
+print(soup.find_all('p'))
+
+Mentioned that using RegEx capabilities can have the same effect of parsing through all this info vs. BeautifulSoup
+We can also iterate through them, and this helps eliminate unneccessary stuff like the tag:
+
+for paragraph in soup.find_all('p'):
+    print(paragraph.string)
+    print(str(paragraph.text))
+
+The difference between string and text is that string produces a NavigableString object, and text is just typical unicode 
+	text. Notice that, if there are child tags in the paragraph item that we're attempting to use .string on, we 
+		will get None returned. 
+The 2nd option of .text provides more information and what we want
+Child tags are essentially just links/variations within text statements on info that would disrupt .string parsing
+
+Another common task is to grab links. For example:
+
+for url in soup.find_all('a'):
+    print(url.get('href'))
+
+In this case, if we just grabbed the .text from the tag, you'd get the anchor text, but we actually want the link itself. 
+	That's why we're using .get('href') to get the true URL.
+If you did (url.text) your attempt at pulling the links would have failed
+
+Finally, you may just want to grab text. You can use .get_text() on a Beautiful Soup object, including the full soup:
+
+print(soup.get_text())
+
+This statement above allows you to capture stuff that seems like it should be in paragraph tags, but encased in something
+	else
+	ie. his example showed that his poem was encased in <pre>..</pre> tags
+	with this recorded in 2016, he said it's starting to see <span> tags be the thing that encases a lot of 
+		paragraphs now
